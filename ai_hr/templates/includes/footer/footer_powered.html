@@ -1,0 +1,15 @@
+{#- Replaces erpnext's "Powered by ERPNext" line.
+
+    ai_hr resolves ahead of erpnext in the template search order, so shadowing
+    this file is enough - no erpnext source is edited (§13, §23).
+
+    The mark is a transparent PNG so it sits correctly on any footer background;
+    the source artwork is a JPEG on white, which would otherwise show as a white
+    box. Styles live in starrich_web.bundle.css (web_include_css). -#}
+<span class="sci-powered">
+	<span class="sci-powered-text">{{ _("Powered by") }}</span>
+	<img class="sci-powered-mark"
+		src="/assets/ai_hr/images/starrich-logo.png"
+		alt="Starich Consulting International"
+		width="429" height="120" loading="lazy">
+</span>

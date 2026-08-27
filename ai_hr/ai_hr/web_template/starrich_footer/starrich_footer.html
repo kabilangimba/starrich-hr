@@ -1,0 +1,19 @@
+{#- Starrich site footer. Styling lives in starrich_web.bundle.css, which the
+    `web_include_css` hook loads on every website page. -#}
+<footer class="sci-footer">
+	<span class="sci-footer-stripe" aria-hidden="true"></span>
+	<div class="sci-footer-inner">
+		<div class="sci-footer-info">
+			<p class="sci-footer-name">Starich Consulting International</p>
+			{# The company name is the line above, so it is not repeated here. #}
+			<p class="sci-footer-copy">
+				{{ _("Copyright") }} &copy; {{ frappe.utils.now_datetime().year }} | {{ _("All Rights Reserved") }}
+			</p>
+		</div>
+		<nav class="sci-footer-links">
+			<a href="/privacy-policy">{{ _("Privacy Policy") }}</a>
+			<a href="/terms">{{ _("Terms of Service") }}</a>
+			<a href="/contact">{{ _("Help Center") }}</a>
+		</nav>
+	</div>
+</footer>

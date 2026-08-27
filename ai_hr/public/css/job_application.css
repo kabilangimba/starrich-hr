@@ -1,0 +1,364 @@
+/* Job application web form (proposal §18).
+ *
+ * Applied through the Web Form's own `custom_css` field, re-asserted on every
+ * migrate by ai_hr.setup.style_job_application_form(), so the hrms-owned web
+ * form is never edited (§13, §23).
+ *
+ * ── Why the selectors look like this ────────────────────────────────────────
+ * Frappe styles web forms with very deep selectors, e.g.
+ *
+ *   [data-doctype="Web Form"] .page-content-wrapper .container .page_content
+ *     .web-form .web-form-wrapper .form-control      →  specificity (0,7,0)
+ *
+ * A sensible `.web-form-wrapper .form-control` is (0,2,0) and loses silently -
+ * which is exactly why an earlier version of this file appeared to do nothing to
+ * the inputs. The full chain is repeated below, with `.web-form-wrapper` written
+ * twice to add one class and settle the tie without depending on load order.
+ *
+ * Frappe already draws the card as a `.web-form-header` + `.web-form` pair, so
+ * this file deliberately does NOT add another container - doing so produced a
+ * card nested inside a card.
+ */
+
+[data-doctype="Web Form"] {
+	/* Mapped onto Frappe's own theme variables rather than fixed colours, so the
+	 * form follows whatever website theme the site is set to.
+	 *
+	 * An earlier version keyed these off `@media (prefers-color-scheme: dark)`,
+	 * which is wrong here: the Frappe website theme does not follow the OS, so a
+	 * visitor whose system was dark got dark input fields on a white card. */
+	--jaf-ink: var(--text-color);
+	--jaf-ink-2: var(--text-color);
+	--jaf-muted: var(--text-muted);
+	--jaf-field-bg: var(--fg-color);
+	--jaf-line: var(--border-color);
+	--jaf-line-strong: var(--dark-border-color, var(--border-color));
+	--jaf-brand: var(--primary);
+	--jaf-brand-soft: rgba(42, 120, 214, .18);
+	--jaf-danger: var(--red-400, #cf3b3b);
+	/* Soft neutral the window card sits on, as in the reference. */
+	--jaf-backdrop: #ecebe8;
+}
+
+/* -- card ------------------------------------------------------------------ */
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form-header,
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form {
+	border-color: var(--jaf-line);
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form-header {
+	border-top-left-radius: 14px;
+	border-top-right-radius: 14px;
+	padding: 1.85rem 2rem 0;
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form {
+	border-bottom-left-radius: 14px;
+	border-bottom-right-radius: 14px;
+	padding: 1.5rem 2rem 2rem;
+	/* One soft shadow across the header+body pair, so it reads as a single card. */
+	box-shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 10px 30px rgba(16, 24, 40, .05);
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form-header .web-form-head {
+	border-bottom-color: var(--jaf-line);
+	padding-bottom: 1.15rem;
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form-title h1 {
+	font-weight: 650;
+	letter-spacing: -.02em;
+	color: var(--jaf-ink);
+}
+
+/* "Not Saved" reads as an error to a candidate part-way through the form; keep
+ * it as a quiet hint rather than a warning. */
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content #not-saved-badge .indicator-pill,
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content #not-saved-badge {
+	background: transparent !important;
+	color: var(--jaf-muted) !important;
+	font-weight: 400 !important;
+}
+
+/* -- labels ---------------------------------------------------------------- */
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .control-label {
+	display: block;
+	font-size: .8125rem;
+	font-weight: 600;
+	/* The default sits close to --text-muted, which reads as disabled. */
+	color: var(--jaf-ink-2);
+	opacity: .95;
+	margin-bottom: .4rem;
+}
+
+/* -- inputs ---------------------------------------------------------------- */
+
+/* A filled, borderless field reads as read-only. A white field with a real
+ * border reads as something you can type into. */
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-control {
+	background-color: var(--jaf-field-bg);
+	color: var(--jaf-ink);
+	border: 1px solid var(--jaf-line-strong);
+	border-radius: 8px;
+	height: auto;
+	padding: .55rem .75rem;
+	font-size: .875rem;
+	line-height: 1.5;
+	box-shadow: none;
+	transition: border-color .12s ease, box-shadow .12s ease;
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-control:hover {
+	border-color: var(--jaf-muted);
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-control:focus {
+	background-color: var(--jaf-field-bg);
+	border-color: var(--jaf-brand);
+	box-shadow: 0 0 0 3px var(--jaf-brand-soft);
+	outline: 0;
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-control::placeholder {
+	color: var(--jaf-muted);
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper textarea.form-control {
+	min-height: 130px;
+	line-height: 1.6;
+	resize: vertical;
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-control[readonly],
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-control:disabled {
+	background-color: rgba(127, 127, 127, .07);
+	color: var(--jaf-muted);
+	cursor: not-allowed;
+}
+
+/* -- spacing --------------------------------------------------------------- */
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-column .form-group {
+	margin-bottom: 1.15rem;
+}
+
+/* -- section headings ------------------------------------------------------ */
+
+/* Core renders these at --text-xl bold, which competes with the form title.
+ * A quiet uppercase rule reads as a divider instead of a second heading. */
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-section .section-head {
+	font-size: .72rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .07em;
+	color: var(--jaf-muted);
+	padding: 1.5rem 0 .85rem;
+	margin-top: 1.1rem;
+	border-top: 1px solid var(--jaf-line);
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .form-section:first-child .section-head {
+	border-top: 0;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+/* -- attach control -------------------------------------------------------- */
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .btn-attach {
+	border: 1px dashed var(--jaf-line-strong);
+	border-radius: 8px;
+	padding: .5rem .9rem;
+	background: transparent;
+	color: var(--jaf-ink-2);
+	font-size: .8125rem;
+	font-weight: 500;
+	box-shadow: none;
+	transition: border-color .12s ease, color .12s ease;
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .btn-attach:hover {
+	border-color: var(--jaf-brand);
+	color: var(--jaf-brand);
+}
+
+/* -- actions --------------------------------------------------------------- */
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-footer .web-form-actions .btn-primary {
+	background-color: var(--jaf-brand);
+	border: 1px solid var(--jaf-brand);
+	color: #fff;
+	border-radius: 8px;
+	padding: .55rem 1.5rem;
+	font-weight: 600 !important;
+	box-shadow: 0 1px 2px rgba(16, 24, 40, .08);
+	transition: filter .12s ease;
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-footer .web-form-actions .btn-primary:hover {
+	filter: brightness(1.06);
+}
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-footer {
+	margin-top: 1.5rem;
+	padding-top: 1.35rem;
+	border-top: 1px solid var(--jaf-line);
+}
+
+/* -- validation ------------------------------------------------------------ */
+
+[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+	.web-form-wrapper.web-form-wrapper .has-error .form-control {
+	border-color: var(--jaf-danger);
+}
+
+/* -- responsive ------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form-header {
+		padding: 1.35rem 1.25rem 0;
+	}
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form {
+		padding: 1.15rem 1.25rem 1.5rem;
+	}
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form
+		.web-form-footer .web-form-actions .btn-primary {
+		width: 100%;
+	}
+}
+
+
+/* -- split layout ----------------------------------------------------------- */
+/*
+ * Modelled on the supplied reference: a soft neutral page, one white rounded
+ * "window" card floating on it, the photo inset inside that card on the left
+ * with its own rounded corners, and the form beside it on the right.
+ *
+ * The photo is a flex child created with ::before on .page_content, so no markup
+ * is added - this file only ever ships as the Web Form's custom_css.
+ *
+ * Frappe draws its own card as a `.web-form-header` + `.web-form` pair with
+ * borders and a radius. Inside the window that would be a card within a card, so
+ * their chrome is flattened here and the window carries it instead.
+ */
+
+@media (min-width: 992px) {
+	/* The neutral backdrop, spanning the viewport out of the Bootstrap
+	 * .container that would otherwise cap this row at ~1140px. */
+	[data-doctype="Web Form"] {
+		position: relative;
+		z-index: 1;
+		margin-left: calc(50% - 50vw);
+		margin-right: calc(50% - 50vw);
+		padding: 3.5rem 2rem 4rem;
+		background: var(--jaf-backdrop);
+	}
+
+	[data-doctype="Web Form"] .sidebar-column { display: none; }
+	[data-doctype="Web Form"] .main-column { flex: 0 0 100%; max-width: 100%; }
+	[data-doctype="Web Form"] .page-content-wrapper .container { padding: 0; }
+
+	/* The window card. */
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content {
+		display: flex;
+		align-items: stretch;
+		gap: 1.75rem;
+		/* Wider than the reference's 1060: this form has far more fields than a
+		 * login box, so the extra width keeps the inputs comfortable and gives the
+		 * photo a near-square panel, which crops the 735x553 source far less. */
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 1.15rem;
+		background: var(--jaf-field-bg);
+		border-radius: 24px;
+		box-shadow: 0 20px 55px rgba(16, 24, 40, .10), 0 2px 6px rgba(16, 24, 40, .04);
+	}
+
+	/* The inset photo panel.
+	 *
+	 * Height is capped rather than stretched to the form. This form is long, so
+	 * `align-self: stretch` made the panel two thousand pixels tall and `cover`
+	 * magnified the photo into an unreadable close-up. `sticky` then keeps the
+	 * panel in view while the applicant scrolls, instead of leaving a long blank
+	 * column beside the lower fields.
+	 *
+	 * The source is portrait (736x1308). At this panel width it renders about
+	 * 1014px tall, so a short panel would crop nearly half of it; 720px holds the
+	 * crop to roughly a quarter, taken off the empty sky and floor. */
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content::before {
+		content: "";
+		flex: 0 0 46%;
+		align-self: flex-start;
+		position: sticky;
+		top: 1.15rem;
+		height: 720px;
+		border-radius: 16px;
+		/* Biased below centre: the hand and the candidate sit in the lower two
+		 * thirds of the frame, so a plain centre crop clips his feet. */
+		background: url("/assets/ai_hr/images/hiring-panel.jpg") center 58% / cover no-repeat;
+	}
+
+	/* The form column fills the rest. `min-width: 0` stops a long field or word
+	 * from forcing the flex item wider than its share. */
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content > .web-form-container {
+		flex: 1 1 auto;
+		min-width: 0;
+		padding: 1.5rem 1.75rem 1.75rem 0.25rem;
+	}
+
+	/* Flatten Frappe's own card chrome - the window provides it now. */
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content > .web-form-container,
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form-header,
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form {
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+		background: transparent;
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content .web-form-header {
+		padding-top: 0;
+	}
+
+	/* The breadcrumb block is empty on this public form but core still reserves
+	 * `margin: 0 0 2rem` for it, which pushed the title well below the top of the
+	 * photo. Removing it lines the two columns up. */
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content
+		.web-form-header .breadcrumb-container {
+		display: none;
+	}
+
+	/* With the breadcrumb gone the form column can start level with the photo. */
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content > .web-form-container {
+		padding-top: 0.35rem;
+	}
+}
+
+/* Below 992px the photo would leave too little room for the form, so the window
+ * collapses to a plain full-width card and the photo is dropped rather than
+ * squeezed into a strip. */
+@media (max-width: 991.98px) {
+	[data-doctype="Web Form"] .page-content-wrapper .container .page_content::before {
+		display: none;
+	}
+}

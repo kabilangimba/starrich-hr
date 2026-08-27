@@ -1,0 +1,266 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-08-18 00:14:29.607355",
+ "description": "Advisory fit score for one candidate against one job opening.",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "job_applicant",
+  "job_opening",
+  "cb_head",
+  "scoring_status",
+  "verdict",
+  "error_message",
+  "sec_scores",
+  "overall_score",
+  "skills_score",
+  "experience_score",
+  "cb_scores",
+  "education_score",
+  "certification_score",
+  "requirements_score",
+  "sec_reasoning",
+  "explanation",
+  "matched_requirements",
+  "missing_requirements",
+  "recommended_action",
+  "sec_meta",
+  "source_hash",
+  "provider_used",
+  "model_used",
+  "cb_meta",
+  "scored_on",
+  "input_tokens",
+  "output_tokens"
+ ],
+ "fields": [
+  {
+   "fieldname": "job_applicant",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Job Applicant",
+   "options": "Job Applicant",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "job_opening",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Job Opening",
+   "options": "Job Opening",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "cb_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Queued",
+   "fieldname": "scoring_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Queued\nProcessing\nCompleted\nFailed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verdict",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Verdict",
+   "options": "\nStrong Match\nGood Match\nPossible Match\nWeak Match",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.scoring_status=='Failed'",
+   "fieldname": "error_message",
+   "fieldtype": "Small Text",
+   "label": "Error",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_scores",
+   "fieldtype": "Section Break",
+   "label": "Scores"
+  },
+  {
+   "bold": 1,
+   "fieldname": "overall_score",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Overall Match",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skills_score",
+   "fieldtype": "Percent",
+   "label": "Skills Match",
+   "read_only": 1
+  },
+  {
+   "fieldname": "experience_score",
+   "fieldtype": "Percent",
+   "label": "Experience Match",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_scores",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "education_score",
+   "fieldtype": "Percent",
+   "label": "Education Match",
+   "read_only": 1
+  },
+  {
+   "fieldname": "certification_score",
+   "fieldtype": "Percent",
+   "label": "Certifications",
+   "read_only": 1
+  },
+  {
+   "fieldname": "requirements_score",
+   "fieldtype": "Percent",
+   "label": "Job Requirements",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_reasoning",
+   "fieldtype": "Section Break",
+   "label": "Assessment"
+  },
+  {
+   "fieldname": "explanation",
+   "fieldtype": "Small Text",
+   "label": "Explanation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "matched_requirements",
+   "fieldtype": "Small Text",
+   "label": "Requirements Met",
+   "read_only": 1
+  },
+  {
+   "fieldname": "missing_requirements",
+   "fieldtype": "Small Text",
+   "label": "Requirements Not Evidenced",
+   "read_only": 1
+  },
+  {
+   "description": "Advisory only. Hiring and rejection decisions remain with the recruiter.",
+   "fieldname": "recommended_action",
+   "fieldtype": "Small Text",
+   "label": "Recommended Next Step",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sec_meta",
+   "fieldtype": "Section Break",
+   "label": "Run Details"
+  },
+  {
+   "fieldname": "source_hash",
+   "fieldtype": "Data",
+   "label": "Source Hash",
+   "length": 64,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "provider_used",
+   "fieldtype": "Data",
+   "label": "Provider",
+   "read_only": 1
+  },
+  {
+   "fieldname": "model_used",
+   "fieldtype": "Data",
+   "label": "Model",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_meta",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scored_on",
+   "fieldtype": "Datetime",
+   "label": "Scored On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "input_tokens",
+   "fieldtype": "Int",
+   "label": "Input Tokens",
+   "read_only": 1
+  },
+  {
+   "fieldname": "output_tokens",
+   "fieldtype": "Int",
+   "label": "Output Tokens",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-18 00:14:29.607355",
+ "modified_by": "Administrator",
+ "module": "AI HR",
+ "name": "AI Candidate Score",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

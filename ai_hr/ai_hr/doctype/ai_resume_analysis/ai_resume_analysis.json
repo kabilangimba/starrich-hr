@@ -1,0 +1,305 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-08-18 00:07:01.515318",
+ "description": "Structured profile extracted from a candidate CV by the configured AI provider.",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "job_applicant",
+  "parsing_status",
+  "cb_head",
+  "resume_file",
+  "content_hash",
+  "error_message",
+  "sec_profile",
+  "full_name",
+  "email_id",
+  "phone",
+  "cb_profile",
+  "location",
+  "total_years_experience",
+  "sec_summary",
+  "professional_summary",
+  "sec_skills",
+  "skills",
+  "sec_history",
+  "experience_json",
+  "education_json",
+  "sec_extras",
+  "certifications",
+  "languages",
+  "projects",
+  "cb_extras",
+  "linkedin_url",
+  "github_url",
+  "portfolio_url",
+  "sec_meta",
+  "provider_used",
+  "model_used",
+  "analysis_date",
+  "cb_meta",
+  "input_tokens",
+  "output_tokens"
+ ],
+ "fields": [
+  {
+   "fieldname": "job_applicant",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Job Applicant",
+   "options": "Job Applicant",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "Queued",
+   "fieldname": "parsing_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Parsing Status",
+   "options": "Queued\nProcessing\nCompleted\nFailed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "resume_file",
+   "fieldtype": "Data",
+   "label": "Resume File",
+   "read_only": 1
+  },
+  {
+   "fieldname": "content_hash",
+   "fieldtype": "Data",
+   "label": "Content Hash",
+   "length": 64,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.parsing_status=='Failed'",
+   "fieldname": "error_message",
+   "fieldtype": "Small Text",
+   "label": "Error",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_profile",
+   "fieldtype": "Section Break",
+   "label": "Candidate Profile"
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "cb_profile",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "total_years_experience",
+   "fieldtype": "Float",
+   "label": "Total Years of Experience",
+   "precision": "1"
+  },
+  {
+   "fieldname": "sec_summary",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "professional_summary",
+   "fieldtype": "Small Text",
+   "label": "Professional Summary"
+  },
+  {
+   "fieldname": "sec_skills",
+   "fieldtype": "Section Break",
+   "label": "Skills"
+  },
+  {
+   "fieldname": "skills",
+   "fieldtype": "Table",
+   "label": "Skills",
+   "options": "AI Resume Skill"
+  },
+  {
+   "fieldname": "sec_history",
+   "fieldtype": "Section Break",
+   "label": "History"
+  },
+  {
+   "fieldname": "experience_json",
+   "fieldtype": "Code",
+   "label": "Experience",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "education_json",
+   "fieldtype": "Code",
+   "label": "Education",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_extras",
+   "fieldtype": "Section Break",
+   "label": "Additional"
+  },
+  {
+   "fieldname": "certifications",
+   "fieldtype": "Small Text",
+   "label": "Certifications"
+  },
+  {
+   "fieldname": "languages",
+   "fieldtype": "Small Text",
+   "label": "Languages"
+  },
+  {
+   "fieldname": "projects",
+   "fieldtype": "Small Text",
+   "label": "Projects"
+  },
+  {
+   "fieldname": "cb_extras",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "linkedin_url",
+   "fieldtype": "Data",
+   "label": "LinkedIn",
+   "options": "URL"
+  },
+  {
+   "fieldname": "github_url",
+   "fieldtype": "Data",
+   "label": "GitHub",
+   "options": "URL"
+  },
+  {
+   "fieldname": "portfolio_url",
+   "fieldtype": "Data",
+   "label": "Portfolio",
+   "options": "URL"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sec_meta",
+   "fieldtype": "Section Break",
+   "label": "Run Details"
+  },
+  {
+   "fieldname": "provider_used",
+   "fieldtype": "Data",
+   "label": "Provider",
+   "read_only": 1
+  },
+  {
+   "fieldname": "model_used",
+   "fieldtype": "Data",
+   "label": "Model",
+   "read_only": 1
+  },
+  {
+   "fieldname": "analysis_date",
+   "fieldtype": "Datetime",
+   "label": "Analysed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_meta",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "input_tokens",
+   "fieldtype": "Int",
+   "label": "Input Tokens",
+   "read_only": 1
+  },
+  {
+   "fieldname": "output_tokens",
+   "fieldtype": "Int",
+   "label": "Output Tokens",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-18 00:07:01.515318",
+ "modified_by": "Administrator",
+ "module": "AI HR",
+ "name": "AI Resume Analysis",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "full_name",
+ "track_changes": 1
+}

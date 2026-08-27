@@ -1,0 +1,309 @@
+/* Starich Consulting International — login theme ("Aetheric Minimalist").
+ *
+ * Loaded only by the shadowed login page, so it cannot affect the Desk or the
+ * rest of the website. Tokens follow DESIGN.md.
+ */
+
+:root {
+	--sci-surface: #f6faff;
+	--sci-surface-lowest: #ffffff;
+	--sci-surface-variant: #dbe4ed;
+	--sci-container-highest: #dbe4ed;
+	--sci-on-surface: #141d23;
+	--sci-on-surface-variant: #434656;
+	--sci-outline: #737688;
+	--sci-outline-variant: #c3c5d9;
+	--sci-primary: #0041c8;
+	--sci-primary-hover: #0039b3;
+	--sci-on-primary: #ffffff;
+	--sci-error: #ba1a1a;
+	--sci-shadow: 0 4px 20px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.02);
+	--sci-shadow-hover: 0 8px 30px rgba(0,0,0,.06), 0 4px 8px rgba(0,0,0,.03);
+	--sci-brand-crimson: #a61b24;
+	--sci-brand-navy: #1f4e79;
+	--sci-brand-navy-light: #2c6ba3;
+	--sci-brand-black: #231f20;
+	--sci-body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+	--sci-head: Manrope, Inter, system-ui, sans-serif;
+}
+
+/* -- page shell ------------------------------------------------------------ */
+
+/* Sticky footer: the brand bar, the page content and the footer are body-level
+ * siblings (the template puts them in the navbar/content/footer blocks), so the
+ * content column can absorb the leftover height and push the footer down. */
+body {
+	font-family: var(--sci-body);
+	color: var(--sci-on-surface);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+
+	/* Full-bleed boardroom photo behind the whole page, shown as-is with no
+	 * overlay. Contrast is carried by the card itself, which is opaque, and by
+	 * the solid footer bar. The colour is only a fallback while the image loads.
+	 * `fixed` keeps the photo steady while the form scrolls on short screens. */
+	background-color: var(--sci-surface);
+	/* The filename carries a content hash on purpose. Images are served with
+	 * `max-age=43200` and, unlike the CSS/JS bundles, esbuild does not rewrite
+	 * asset URLs - `ignore-assets.js` marks /assets/... external. A stable name
+	 * therefore pins a stale image in the browser for twelve hours, which is
+	 * exactly what happened when this photo was swapped. Re-hash the name
+	 * whenever the artwork changes. */
+	background-image: url("/assets/ai_hr/images/login-bg.de6ad5c2.jpg");
+	background-size: cover;
+	background-position: center center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+}
+
+/* Whatever wrapper frappe renders between navbar and footer takes the slack. */
+body > .page-content-wrapper,
+body > main,
+body > .container,
+body > section,
+body > div:not([id="all-symbols"]):not([class*="modal"]) {
+	flex: 1 0 auto;
+}
+
+/* The footer rules now live in starrich_web.bundle.css, which `web_include_css`
+ * loads on every website page, so /login and /jobs cannot drift apart. The brand
+ * tokens above stay here because the splash and page chrome below still use them. */
+
+/* Sign-in transition.
+ *
+ * The photo cannot be cross-faded directly (background-image is not animatable),
+ * so a white veil is faded in over it. `z-index: -1` keeps it above the body
+ * background but beneath the card and footer, which stay legible while the
+ * request is in flight. */
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	background: linear-gradient(180deg, #ffffff 0%, var(--sci-surface) 100%);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .25s ease;
+}
+
+/* Sequenced sign-out of the page: the card and footer fade first, then the veil
+ * covers the photo once they are gone. The 200ms delay on the veil matches the
+ * card's fade duration, so the two do not overlap. */
+body.sci-signing-in .login-content.page-card,
+body.sci-signing-in .sci-footer {
+	opacity: 0;
+	pointer-events: none;
+}
+
+body.sci-signing-in::after {
+	opacity: 1;
+	transition: opacity .3s ease .2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body::after,
+	body.sci-signing-in::after,
+	.login-content.page-card,
+	.sci-footer { transition: none; }
+}
+
+/* -- login card ------------------------------------------------------------ */
+
+/* Each auth view is its own <section> and only one shows at a time.
+ *
+ * Deliberately no `display` here. Frappe hides the inactive views with
+ * `.for-signup, .for-forgot, .for-login-with-email-link, .for-email-login
+ * { display: none }` (specificity 0,1,0) and login.js flips them with jQuery
+ * .toggle(). An earlier `section.for-… { display: flex }` was 0,1,1, so it beat
+ * that rule and left every view on screen at once. Spacing only, and the card
+ * centres itself with `margin-inline: auto` - which works whatever display
+ * value jQuery happens to write inline. */
+.for-login,
+.for-email-login,
+.for-signup,
+.for-forgot,
+.for-login-with-email-link {
+	padding: 56px 24px;
+}
+
+.login-content.page-card {
+	width: 100%;
+	max-width: 420px;
+	/* Centres the card without relying on the parent being a flex container. */
+	margin-inline: auto;
+	background: var(--sci-surface-lowest);
+	/* No border: on a photo a hairline reads as a cut-out. Depth comes from the
+	 * shadow instead, which is what separates the card from the image. */
+	border: 0;
+	border-radius: 20px;
+	padding: 44px 40px 40px;
+	box-shadow: 0 24px 60px rgba(20, 29, 35, .16), 0 4px 12px rgba(20, 29, 35, .07);
+	/* No delay here, so a failed sign-in brings the card straight back. */
+	transition: box-shadow .2s ease, opacity .2s ease;
+}
+
+/* The card header - logo, heading and subtitle - is centred; the field labels
+ * and inputs below stay left-aligned so the form is still comfortable to scan.
+ * `align-self` is needed on the logo because the template sets the head to
+ * `items-start`. */
+.page-card-head .app-logo {
+	height: 34px;
+	width: auto;
+	object-fit: contain;
+	align-self: center;
+}
+
+/* The template hard-codes `text-left` on .page-card-head. Setting text-align on
+ * this inner block overrides the inherited value outright, so it does not depend
+ * on stylesheet order to win. */
+.login-content .page-card-head-text { text-align: center; }
+
+.page-card-head h4 {
+	font-family: var(--sci-head);
+	font-size: 26px;
+	font-weight: 700;
+	letter-spacing: -.02em;
+	line-height: 1.25;
+	color: var(--sci-on-surface);
+}
+
+.page-card-subtitle { font-size: 14px; line-height: 1.5; color: var(--sci-on-surface-variant); }
+
+/* The footer is styled in starrich_web.bundle.css; only its fade belongs here,
+ * because the sign-in transition is specific to this page. */
+.sci-footer { transition: opacity .2s ease; }
+
+/* -- form controls --------------------------------------------------------- */
+
+.login-content .form-control {
+	width: 100%;
+	background: var(--sci-surface-lowest);
+	border: 1px solid var(--sci-outline-variant);
+	border-radius: 10px;
+	/* Roomier than Frappe's default: a login field is the one control on the
+	 * page, so it can afford the height. */
+	padding: 12px 14px;
+	font-size: 14.5px;
+	color: var(--sci-on-surface);
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.login-content .form-control:focus {
+	outline: none;
+	border-color: var(--sci-primary);
+	/* The design system's 3px focus glow. */
+	box-shadow: 0 0 0 3px rgba(0, 65, 200, .15);
+}
+
+.login-content .form-control::placeholder { color: var(--sci-outline); }
+
+.login-content .email-field,
+.login-content .password-field { position: relative; width: 100%; }
+
+/* The reveal-password control sits inside the field, so the text must not run
+ * under it. */
+.login-content .password-field .form-control { padding-right: 40px; }
+
+.login-content .toggle-password {
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	color: var(--sci-outline);
+}
+
+.login-content .field-error { color: var(--sci-error); }
+
+/* -- buttons --------------------------------------------------------------- */
+
+.login-content .es-button[data-variant="solid"] {
+	background: var(--sci-primary);
+	color: var(--sci-on-primary);
+	border: 0;
+	border-radius: 10px;
+	padding: 13px 16px;
+	font-size: 14.5px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .15s ease, transform .08s ease;
+}
+
+.login-content .es-button[data-variant="solid"]:hover { background: var(--sci-primary-hover); }
+.login-content .es-button[data-variant="solid"]:active { transform: translateY(1px); }
+
+.login-content .btn-login-option {
+	display: block;
+	text-align: center;
+	background: var(--sci-surface-lowest);
+	color: var(--sci-on-surface);
+	border: 1px solid var(--sci-outline-variant);
+	border-radius: 10px;
+	padding: 12px 16px;
+	font-size: 14.5px;
+	font-weight: 500;
+	text-decoration: none;
+	transition: border-color .15s ease;
+}
+
+.login-content .btn-login-option:hover { border-color: var(--sci-outline); text-decoration: none; }
+
+.login-content a { color: var(--sci-primary); }
+
+
+/* -- responsive ------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+	/* `fixed` attachment judders or over-scales on mobile browsers. */
+	body { background-attachment: scroll; }
+
+	.login-content.page-card { padding: 32px 24px; border-radius: 12px; }
+	.page-card-head h4 { font-size: 24px; }
+	.sci-footer { padding: 12px 20px 16px; }
+	.sci-footer-inner { flex-direction: column; text-align: center; gap: 16px; }
+	.sci-footer-links { justify-content: center; gap: 18px; }
+	.sci-footer-links { gap: 16px; }
+	section.for-login, section.for-signup, section.for-forgot,
+	section.for-login-with-email-link, section.for-email-login { padding: 24px 16px; }
+}
+
+
+/* No dividers on the login chrome - the surrounding surface carries the
+ * separation instead. Frappe's own navbar/footer wrappers draw their own rule,
+ * so those are cleared here too rather than left showing through. */
+.sci-footer { border: 0 !important; box-shadow: none !important; }
+
+body > .navbar,
+body > header,
+body > footer:not(.sci-footer),
+.web-footer, .footer-logo-extension, .navbar {
+	border-top: 0 !important;
+	border-bottom: 0 !important;
+	box-shadow: none !important;
+}
+
+/* Below 576px Frappe turns the login card into a full-screen sheet:
+ *   .for-login .page-card, ... { max-width:100%; min-height:100svh;
+ *                                border-radius:0; border:none }
+ * We keep the floating card over the background photo, and were overriding
+ * max-width/border/radius but not `min-height` - so the card kept a full
+ * viewport height and left a tall empty area under the form. Reset the rest of
+ * that rule here. The selector matches Frappe's own specificity and is declared
+ * later, so it wins without needing to be more specific. */
+@media (max-width: 575.98px) {
+	.for-login .page-card,
+	.for-email-login .page-card,
+	.for-signup .page-card,
+	.for-forgot .page-card,
+	.for-login-with-email-link .page-card {
+		min-height: 0;
+		max-width: 420px;
+		border: 1px solid var(--sci-outline-variant);
+		border-radius: 12px;
+	}
+
+	/* Frappe also stretches the content wrapper to the full viewport at this
+	 * width, which pushes the footer off-screen. */
+	body .page-content-wrapper { min-height: 0; }
+}

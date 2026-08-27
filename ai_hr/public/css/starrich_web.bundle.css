@@ -1,0 +1,119 @@
+/* Starrich footer - shared by every website page, including /login and /jobs.
+ *
+ * Loaded through the `web_include_css` hook, so it reaches any template that
+ * extends templates/web.html. The markup lives in the "Starrich Footer" Web
+ * Template (ai_hr/ai_hr/web_template/starrich_footer), which Website Settings
+ * selects in place of Frappe's "Standard Footer" - that is the supported way to
+ * replace the site footer, so no core template is shadowed or edited.
+ *
+ * These rules are the single source of truth for the footer; login.css
+ * deliberately no longer carries a copy.
+ */
+
+:root {
+	--sci-brand-crimson: #a61b24;
+	--sci-brand-navy: #1f4e79;
+	--sci-brand-navy-light: #2c6ba3;
+	--sci-brand-black: #231f20;
+}
+
+.sci-footer {
+	flex: 0 0 auto;
+	position: relative;
+	/* Pins the footer to the bottom on short pages when the page body is a
+	 * flex column (the login page). Inert elsewhere. */
+	margin-top: auto;
+	background: var(--sci-brand-navy);
+	color: #ffffff;
+	/* Room for the 3px stripe that sits on the top edge. */
+	padding: 12px 32px 14px;
+}
+
+.sci-footer-stripe {
+	position: absolute; top: 0; left: 0; right: 0; height: 3px;
+	background: linear-gradient(
+		to right,
+		var(--sci-brand-crimson) 0 34%,
+		var(--sci-brand-navy-light) 34% 67%,
+		var(--sci-brand-black) 67% 100%
+	);
+}
+
+.sci-footer-inner {
+	/* Full width on purpose: a centred max-width wrapper leaves large gaps on
+	 * wide screens and makes both halves drift toward the middle. The footer's
+	 * own horizontal padding is what keeps them off the edge. */
+	width: 100%;
+	display: flex; flex-wrap: wrap; gap: 8px 20px;
+	align-items: center; justify-content: space-between;
+}
+
+.sci-footer-info {
+	display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
+}
+
+.sci-footer-name {
+	margin: 0;
+	font-size: 13.5px; font-weight: 700; letter-spacing: .01em;
+	color: #ffffff;
+}
+
+.sci-footer-copy {
+	margin: 0;
+	font-size: 12.5px; line-height: 1.4;
+	/* Slightly held back so the company name leads. */
+	color: rgba(255, 255, 255, .72);
+}
+
+.sci-footer-links { display: flex; flex-wrap: wrap; gap: 22px; }
+
+.sci-footer-links a {
+	font-size: 12.5px; font-weight: 500;
+	color: rgba(255, 255, 255, .85);
+	text-decoration: none;
+	transition: color .15s ease;
+}
+
+.sci-footer-links a:hover { color: #ffffff; text-decoration: underline; }
+
+@media (max-width: 640px) {
+	.sci-footer { padding: 12px 20px 16px; }
+	.sci-footer-links { gap: 16px; }
+}
+
+
+/* -- "Powered by" mark ------------------------------------------------------ */
+/*
+ * Used by templates/includes/footer/footer_powered.html, which shadows
+ * erpnext's "Powered by ERPNext" line.
+ */
+
+.sci-powered {
+	display: inline-flex;
+	align-items: center;
+	gap: .45rem;
+	line-height: 1;
+}
+
+.sci-powered-text {
+	font-size: 12.5px;
+	color: inherit;
+	opacity: .75;
+}
+
+.sci-powered-mark {
+	/* Height drives the size; width follows the artwork's aspect ratio. The
+	 * intrinsic width/height on the <img> keeps the line from reflowing while
+	 * the image loads. */
+	height: 18px;
+	width: auto;
+	display: block;
+}
+
+/* On the navy footer bar the dark mark would disappear, so it is lifted to
+ * white there. `brightness(0) invert(1)` flattens the artwork to a solid white
+ * silhouette, which is legible on the brand navy. */
+.sci-footer .sci-powered-mark {
+	filter: brightness(0) invert(1);
+	opacity: .92;
+}

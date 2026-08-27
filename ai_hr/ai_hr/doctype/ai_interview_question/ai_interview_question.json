@@ -1,0 +1,68 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "creation": "2026-08-18 00:30:51.989181",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "question",
+  "category",
+  "look_for",
+  "rationale",
+  "asked"
+ ],
+ "fields": [
+  {
+   "columns": 5,
+   "fieldname": "question",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Question",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "default": "Technical",
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Technical\nBehavioural\nSituational\nExperience\nCulture"
+  },
+  {
+   "columns": 3,
+   "fieldname": "look_for",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "What a strong answer covers"
+  },
+  {
+   "fieldname": "rationale",
+   "fieldtype": "Small Text",
+   "label": "Why ask this"
+  },
+  {
+   "default": "0",
+   "fieldname": "asked",
+   "fieldtype": "Check",
+   "label": "Asked"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-18 00:30:51.989181",
+ "modified_by": "Administrator",
+ "module": "AI HR",
+ "name": "AI Interview Question",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

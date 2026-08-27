@@ -1,0 +1,166 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "creation": "2026-08-18 00:00:12.472182",
+ "description": "AI provider configuration for the AI HR / ATS module.",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "provider_section",
+  "provider",
+  "api_key",
+  "provider_cb",
+  "model",
+  "base_url",
+  "tuning_section",
+  "effort",
+  "max_tokens",
+  "tuning_cb",
+  "request_timeout",
+  "features_section",
+  "enable_resume_parsing",
+  "enable_candidate_matching",
+  "features_cb",
+  "enable_interview_assistant",
+  "enable_jd_generation"
+ ],
+ "fields": [
+  {
+   "fieldname": "provider_section",
+   "fieldtype": "Section Break",
+   "label": "AI Provider"
+  },
+  {
+   "default": "Anthropic Claude",
+   "fieldname": "provider",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "AI Provider",
+   "options": "Anthropic Claude\nOpenAI\nGoogle Gemini\nOllama",
+   "reqd": 1
+  },
+  {
+   "description": "Stored encrypted. Never sent to the browser.",
+   "fieldname": "api_key",
+   "fieldtype": "Password",
+   "label": "API Key"
+  },
+  {
+   "fieldname": "provider_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Leave blank to use the provider default (Claude: claude-opus-5).",
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "description": "Override the API endpoint. Required for Ollama if not on localhost:11434.",
+   "fieldname": "base_url",
+   "fieldtype": "Data",
+   "label": "Base URL"
+  },
+  {
+   "fieldname": "tuning_section",
+   "fieldtype": "Section Break",
+   "label": "Tuning"
+  },
+  {
+   "description": "Claude/OpenAI reasoning depth. Blank uses the provider default. Note: sampling parameters such as temperature are rejected by Claude Opus 4.7+, so effort replaces them.",
+   "fieldname": "effort",
+   "fieldtype": "Select",
+   "label": "Reasoning Effort",
+   "options": "\nlow\nmedium\nhigh\nxhigh\nmax"
+  },
+  {
+   "default": "8000",
+   "description": "Caps reasoning plus answer. Raise if responses truncate.",
+   "fieldname": "max_tokens",
+   "fieldtype": "Int",
+   "label": "Max Tokens"
+  },
+  {
+   "fieldname": "tuning_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "180",
+   "fieldname": "request_timeout",
+   "fieldtype": "Int",
+   "label": "Request Timeout (seconds)"
+  },
+  {
+   "fieldname": "features_section",
+   "fieldtype": "Section Break",
+   "label": "Features"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_resume_parsing",
+   "fieldtype": "Check",
+   "label": "Enable AI Resume Parsing"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_candidate_matching",
+   "fieldtype": "Check",
+   "label": "Enable AI Candidate Matching"
+  },
+  {
+   "fieldname": "features_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_interview_assistant",
+   "fieldtype": "Check",
+   "label": "Enable AI Interview Assistant"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_jd_generation",
+   "fieldtype": "Check",
+   "label": "Enable AI Job Description Generation"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-18 00:00:12.472182",
+ "modified_by": "Administrator",
+ "module": "AI HR",
+ "name": "AI HR Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

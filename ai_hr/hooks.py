@@ -58,6 +58,9 @@ use_json_request_body = True
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
+# app_include_css = "/assets/ai_hr/css/ai_hr_dashboard.css"
+
+
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -295,3 +298,70 @@ require_type_annotated_api_methods = True
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+# ---------------------------------------------------------------------------
+# AI HR
+
+# Brand logo used by the login page, navbar and email templates.
+# Generated from the supplied SCI LOGO artwork: trimmed of its white margin and
+# converted to a transparent PNG, so it sits correctly on any background.
+app_logo_url = "/assets/ai_hr/images/starrich-logo.png"
+
+# Branded landing screen shown after login (the /app/desktop apps page).
+#
+# These load on every Desk page, which is the only hook Frappe offers - so both
+# are written to stay inert elsewhere: the CSS is scoped entirely under
+# `body.apps-page` (a class desk.js sets only for the apps grid), and the JS just
+# registers one listener for the `desktop_screen` event that page emits.
+# Declared as bundles, not raw /assets paths, so esbuild gives each build a
+# content-hashed filename. Frappe's bundled_asset() only rewrites a path when it
+# contains ".bundle." AND does not already start with /assets - a literal
+# /assets/... URL is emitted verbatim, and since assets are served with
+# `max-age=43200` the browser then keeps a stale copy for 12 hours.
+# Website-side styles (the Starrich footer). Bundled for the same cache-busting
+# reason as the desk assets below.
+web_include_css = "starrich_web.bundle.css"
+
+app_include_css = "ai_hr_desktop.bundle.css"
+app_include_js = "ai_hr_desktop.bundle.js"
+
+# Desk boot splash and browser favicon. erpnext sets these in its own
+# website_context; ai_hr loads after erpnext, so these win.
+website_context = {
+	"splash_image": "/assets/ai_hr/images/starrich-logo.png",
+	# The star alone: the full lockup is ~3.5:1, and shrunk into a 32px tab
+	# icon it is an unreadable smear.
+	"favicon": "/assets/ai_hr/images/starrich-icon.png",
+}
+# ---------------------------------------------------------------------------
+
+# Rebrands the "Frappe HR" label that hrms hard-codes into its apps-screen hook.
+# See ai_hr/boot.py for why this is done at boot rather than per surface.
+extend_bootinfo = "ai_hr.boot.boot_session"
+
+after_install = "ai_hr.setup.after_install"
+
+# Re-assert custom fields on every migrate so the schema converges on deploy.
+after_migrate = "ai_hr.setup.after_migrate"
+
+doc_events = {
+	"Job Applicant": {
+		"validate": "ai_hr.setup.sync_status_from_stage",
+		# Parse the CV as soon as an application arrives, including from the
+		# public web form. The handler never raises and does no inline work, so a
+		# candidate's submission cannot be slowed or broken by the AI side.
+		"after_insert": "ai_hr.api.resume.auto_parse_on_insert",
+	},
+}
+
+
+# NOTE: `webform_include_css` is deliberately not used. Frappe only consults
+# that hook when a <web_form_name>.css already exists beside the web form
+# module, and hrms ships none for job_application - so the hook can never
+# fire. The stylesheet is applied to the form's own `custom_css` field by
+# ai_hr.setup.style_job_application_form() instead.
+
+doctype_js = {
+	"Job Applicant": "public/js/job_applicant.js",
+	"Job Opening": "public/js/job_opening.js",
+	"AI Interview": "public/js/ai_interview.js",
+}

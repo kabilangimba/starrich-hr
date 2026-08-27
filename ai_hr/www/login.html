@@ -1,0 +1,285 @@
+{% from "templates/includes/login/macros.html" import alert_banner %}
+{% extends "templates/web.html" %}
+{# ---------------------------------------------------------------------
+   Shadow copy of frappe/www/login.html.
+
+   Frappe resolves www pages via reversed(get_active_apps()), so this file
+   overrides the core one without editing frappe source. Only presentation
+   is changed: every id, class, macro and script the login JS depends on is
+   preserved verbatim, so authentication behaviour is untouched.
+
+   If frappe's login page changes upstream, re-copy it and re-apply the
+   three marked additions below.
+   --------------------------------------------------------------------- #}
+{% block navbar %}
+{% if show_language_picker %}
+    {{ super() }}
+{% endif %}
+{# The brand bar was removed: the background photo carries the setting and the
+   logo already sits at the top of the card, so a second mark was redundant.
+   The block is still overridden so Frappe's own website navbar stays off this
+   page; only the language picker (above) renders when it is enabled. #}
+{% endblock %}
+
+{# ai_hr addition: brand footer, pinned to the bottom on short pages. #}
+{# The footer is no longer overridden here: base.html renders the Web Template
+   named by Website Settings > Footer Template, which ai_hr points at "Starrich
+   Footer". That keeps this page and the rest of the website on one footer. #}
+{% macro email_login_body() -%}
+{% if not disable_user_pass_login or (ldap_settings and ldap_settings.enabled) %}
+<div class="page-card-body flex flex-col gap-4">
+	{{ alert_banner("error") }}
+	<div class="form-group flex flex-col items-start gap-1.5 mb-0">
+		<label class="text-base text-ink-gray-5 w-full mb-0" for="login_email">{{ login_label or _("Email")}}</label>
+		<div class="email-field">
+			<input type="text" id="login_email" class="form-control"
+				placeholder="{% if login_name_placeholder %}{{ login_name_placeholder  }}{% else %}{{ _('jane@example.com') }}{% endif %}"
+				required autofocus autocomplete="username">
+		</div>
+		<p class="field-error text-base text-ink-red-8 mb-0"></p>
+	</div>
+
+	<div class="form-group flex flex-col items-start gap-2 mb-0">
+		<div class="flex flex-col items-start gap-1.5 w-full">
+			<label class="text-base text-ink-gray-5 w-full mb-0" for="login_password">{{ _("Password") }}</label>
+			<div class="password-field">
+				<input type="password" id="login_password" class="form-control" placeholder="••••••••"
+					autocomplete="current-password" required>
+
+				<svg toggle="#login_password" class="icon icon-sm toggle-password" xmlns="http://www.w3.org/2000/svg">
+						<use href="#icon-eye"></use>
+					</svg>
+			</div>
+			<p class="field-error text-base text-ink-red-8 mb-0"></p>
+		</div>
+		{% if not disable_user_pass_login %}
+		<p class="text-lg text-right w-full mb-0">
+			<a href="#forgot" class="text-base text-ink-gray-5">{{ _("Forgot password?") }}</a>
+		</p>
+		{% endif %}
+	</div>
+</div>
+{% endif %}
+<div class="page-card-actions flex flex-col gap-3">
+	{% if not disable_user_pass_login %}
+	<button class="es-button w-full" data-variant="solid" type="submit">
+		{{ _("Continue") }}</button>
+	{% endif %}
+	{% if ldap_settings and ldap_settings.enabled %}
+	<button class="es-button w-full btn-ldap-login" data-variant="solid">
+		{{ _("Login with LDAP") }}</button>
+	{% endif %}
+	{% if login_with_email_link %}
+	<a href="#login-with-email-link"
+		class="es-button w-full btn-login-option btn-login-with-email-link">
+		{{ _("Login with Email Link") }}</a>
+	{% endif %}
+	{% if social_login %}
+	<div class="social-logins text-center text-base">
+		<div class="social-login-buttons">
+			{% for provider in provider_logins %}
+			<div class="login-button-wrapper">
+				<a href="{{ provider.auth_url }}"
+					class="es-button w-full btn-login-option btn-{{ provider.name }}">
+					{% if provider.icon %}
+						{{ provider.icon }}
+					{% endif %}
+					{{ _("Login with {0}").format(provider.provider_name) }}</a>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+	{% endif %}
+</div>
+{% endmacro %}
+
+{% block head_include %}
+{{ include_style('login.bundle.css') }}
+{# ai_hr addition #}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null"
+	href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap">
+<noscript><link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap"></noscript>
+{# Bundled, not a literal /assets path: bundled_asset() only content-hashes a
+   path containing ".bundle." that does not already start with /assets, and
+   assets are served with a 12h max-age - so a plain path pins a stale copy. #}
+{{ include_style('starrich_login.bundle.css') }}
+{% endblock %}
+
+{% macro logo_section(title=null, subtitle=null) %}
+<div class="page-card-head flex flex-col items-start gap-4 text-left">
+	<img class="app-logo" src="{{ logo }}">
+	<div class="page-card-head-text flex flex-col gap-1.5 w-full">
+		{% if title %}
+		<h4 class="text-3xl-bold text-ink-gray-9 w-full mt-0 mb-0">{{ _(title) }}</h4>
+		{% else %}
+		<h4 class="text-3xl-bold text-ink-gray-9 w-full mt-0 mb-0">{{ _('Sign In') }}</h4>
+		{% endif %}
+		{% if subtitle %}
+		<p class="page-card-subtitle text-p-base text-ink-gray-6 mb-0">{{ _(subtitle) }}</p>
+		{% endif %}
+	</div>
+</div>
+{% endmacro %}
+
+{% block page_content %}
+<!-- {{ for_test }} -->
+<div>
+	<noscript>
+		<div class="text-center my-5">
+			<h4>{{ _("Javascript is disabled on your browser") }}</h4>
+			<p class="text-muted">
+				{{ _("You need to enable JavaScript for your app to work.") }}<br>{{ _("To enable it follow the instructions in the following link: {0}").format("<a href='https://enable-javascript.com/'>enable-javascript.com</a></p>") }}
+		</div>
+	</noscript>
+	<section class='for-login'>
+		<div class="login-content page-card flex flex-col gap-5">
+			{{ logo_section(_('Welcome back'), _('Please enter your details to sign in.')) }}
+			<form class="form-signin form-login flex flex-col gap-8" role="form" novalidate>
+				{{ email_login_body() }}
+			</form>
+			{%- if not disable_signup and not disable_user_pass_login -%}
+			<div class="text-center sign-up-message text-p-sm text-ink-gray-6 mt-auto mb-0">
+				{{ _("Don't have an account?") }}
+				<a href="#signup" class="text-p-sm-semibold text-ink-gray-6">{{ _("Sign up") }}</a>
+			</div>
+			{%- endif -%}
+		</div>
+	</section>
+
+	{%- if social_login -%}
+	<section class='for-email-login'>
+		<div class="login-content page-card flex flex-col gap-5">
+			{{ logo_section(_('Welcome back'), _('Please enter your details to sign in.')) }}
+			<form class="form-signin form-login flex flex-col gap-8" role="form" novalidate>
+			{{ email_login_body() }}
+			</form>
+			{%- if not disable_signup and not disable_user_pass_login -%}
+			<div class="text-center sign-up-message text-p-sm text-ink-gray-6 mt-auto mb-0">
+				{{ _("Don't have an account?") }}
+				<a href="#signup" class="text-p-sm-semibold text-ink-gray-6">{{ _("Sign up") }}</a>
+			</div>
+			{%- endif -%}
+		</div>
+	</section>
+	{%- endif -%}
+	<section class='for-signup {{ "signup-disabled" if disable_signup else "" }}'>
+		<div class="login-content page-card flex flex-col gap-5">
+			{{ logo_section(_('Sign Up'), _("Let's setup your account.")) }}
+			{%- if not disable_signup -%}
+			{{ signup_form_template }}
+			{%- else -%}
+			<div class="signup-disabled-message">
+				<span class='indicator gray'>{{_("Signup Disabled")}}</span>
+				<p class="text-muted text-normal sign-up-message mt-1 mb-8">{{_("Signups have been disabled for this website.")}}</p>
+				<div><a href='/' class='es-button' data-variant="solid">{{ _("Home") }}</a></div>
+			</div>
+			{%- endif -%}
+		</div>
+	</section>
+
+	<section class='for-forgot'>
+		<div class="login-content page-card flex flex-col gap-5">
+			{{ logo_section(_('Forgot Password?'), _("Please enter your email, we'll send you password reset link")) }}
+			<form class="form-signin form-forgot hide flex flex-col gap-8" role="form" novalidate>
+				<div class="page-card-body flex flex-col gap-4">
+					{{ alert_banner("success") }}
+					{{ alert_banner("error") }}
+					<div class="form-group flex flex-col items-start gap-1.5 mb-0">
+						<label class="text-base text-ink-gray-5 w-full mb-0" for="forgot_email">{{ _("Email") }}</label>
+						<div class="email-field">
+							<input type="email" id="forgot_email" class="form-control"
+								placeholder="{{ _('jane@example.com') }}" required autofocus autocomplete="username">
+						</div>
+						<p class="field-error text-base text-ink-red-8 mb-0"></p>
+					</div>
+				</div>
+				<div class="page-card-actions flex flex-col gap-3">
+					<button class="es-button w-full btn-forgot" data-variant="solid"
+						type="submit" disabled>{{ _("Send Link") }}</button>
+				</div>
+			</form>
+			<div class="text-center sign-up-message text-p-sm text-ink-gray-6 mt-auto mb-0">
+				<a href="#login" class="text-p-sm-semibold text-ink-gray-6">{{ _("Back to sign in") }}</a>
+			</div>
+		</div>
+	</section>
+
+	<section class='for-login-with-email-link'>
+		<div class="login-content page-card flex flex-col gap-5">
+			{{ logo_section(_('Welcome back'), _('Please enter your details to sign in.')) }}
+			<form class="form-signin form-login-with-email-link hide flex flex-col gap-8" role="form" novalidate>
+				<div class="page-card-body flex flex-col gap-4">
+					{{ alert_banner("success", _("Please check your email.")) }}
+					{{ alert_banner("error") }}
+					<div class="form-group flex flex-col items-start gap-1.5 mb-0">
+						<label class="text-base text-ink-gray-5 w-full mb-0" for="login_with_email_link_email">{{ _("Email") }}</label>
+						<div class="email-field">
+							<input type="email" id="login_with_email_link_email" class="form-control"
+								placeholder="{{ _('jane@example.com') }}" required autofocus autocomplete="username">
+						</div>
+						<p class="field-error text-base text-ink-red-8 mb-0"></p>
+					</div>
+				</div>
+				<div class="page-card-actions flex flex-col gap-3">
+					<p class="resend-link hidden flex items-center gap-2 w-full text-base text-ink-gray-6 mb-0">
+						{{ _("Didn't receive the link?") }} <a href="#" class="btn-resend-link text-base-semibold text-ink-gray-6">{{ _("Resend") }}</a>
+					</p>
+					<button class="es-button w-full btn-login-with-email-link" data-variant="solid"
+						type="submit">{{ _("Send login link") }}</button>
+					<a href="#login" class="es-button w-full btn-login-option">
+						{{ _("Login with password") }}</a>
+				</div>
+			</form>
+			{%- if not disable_signup -%}
+			<div class="text-center sign-up-message text-p-sm text-ink-gray-6 mt-auto mb-0">
+				{{ _("Don't have an account?") }}
+				<a href="#signup" class="text-p-sm-semibold text-ink-gray-6">{{ _("Sign up") }}</a>
+			</div>
+			{%- endif -%}
+		</div>
+	</section>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>{% include "templates/includes/login/login.js" %}</script>
+{# The brand splash was removed: it painted a near-white panel over the
+   background photo for a moment on every load. The page now shows the photo and
+   the card straight away. #}
+{# ai_hr addition: fade the photo out to white as soon as a sign-in is submitted. #}
+<script>
+(function () {
+	var body = document.body;
+	var start = function () { body.classList.add("sci-signing-in"); };
+	var stop = function () { body.classList.remove("sci-signing-in"); };
+
+	// Capture phase: this must run even though login.js also handles submit.
+	document.addEventListener("submit", function (e) {
+		if (e.target && e.target.closest && e.target.closest(".login-content")) start();
+	}, true);
+
+	// A rejected sign-in keeps the user on this page, so bring the photo back
+	// rather than leaving them reading an error over a blank white screen.
+	if (window.MutationObserver) {
+		new MutationObserver(function () {
+			if (document.querySelector(".login-error-banner:not(.hidden), .page-card.invalid-login")) {
+				stop();
+			}
+		}).observe(body, {
+			subtree: true,
+			childList: true,
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+	}
+
+	// Coming back via the browser's back button must not restore a white page.
+	window.addEventListener("pageshow", stop);
+})();
+</script>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

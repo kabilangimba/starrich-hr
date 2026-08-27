@@ -1,0 +1,163 @@
+{
+ "app": "hrms",
+ "charts": [],
+ "content": "[{\"id\": \"aihdr\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>AI HR</b></span>\", \"col\": 12}}, {\"id\": \"aiast\", \"type\": \"card\", \"data\": {\"card_name\": \"Assistant\", \"col\": 4}}, {\"id\": \"airec\", \"type\": \"card\", \"data\": {\"card_name\": \"Recruitment\", \"col\": 4}}, {\"id\": \"aiana\", \"type\": \"card\", \"data\": {\"card_name\": \"AI Analysis\", \"col\": 4}}, {\"id\": \"aicfg\", \"type\": \"card\", \"data\": {\"card_name\": \"Configuration\", \"col\": 4}}]",
+ "creation": "2026-08-18 09:41:17.062649",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "sparkles",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "AI HR",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Assistant",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI Recruiter Assistant",
+   "link_count": 0,
+   "link_to": "ai-recruiter",
+   "link_type": "Page",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "AI Candidate Score",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Candidate Ranking",
+   "link_count": 0,
+   "link_to": "Candidate Ranking",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Recruitment",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Opening",
+   "link_count": 0,
+   "link_to": "Job Opening",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Applicant",
+   "link_count": 0,
+   "link_to": "Job Applicant",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI Interview",
+   "link_count": 0,
+   "link_to": "AI Interview",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI Analysis",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI Resume Analysis",
+   "link_count": 0,
+   "link_to": "AI Resume Analysis",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI Candidate Score",
+   "link_count": 0,
+   "link_to": "AI Candidate Score",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Configuration",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI HR Settings",
+   "link_count": 0,
+   "link_to": "AI HR Settings",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-08-18 09:41:17.062649",
+ "modified_by": "Administrator",
+ "module": "AI HR",
+ "name": "AI HR",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 4.5,
+ "shortcuts": [
+  {
+   "doc_view": "",
+   "label": "Ask AI",
+   "link_to": "ai-recruiter",
+   "type": "Page"
+  },
+  {
+   "doc_view": "",
+   "label": "Candidates",
+   "link_to": "Job Applicant",
+   "type": "DocType"
+  }
+ ],
+ "sidebar_items": [],
+ "standard": 0,
+ "title": "AI HR",
+ "type": "Workspace"
+}
