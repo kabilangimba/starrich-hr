@@ -289,6 +289,48 @@ body.desktop-icons-page .desktop-container.sci-stacked .icon-title.sci-launch-ca
 	.sci-tile-go { display: none; }
 }
 
+/* -- mobile: centre the brand mark ------------------------------------------
+ *
+ * The workspace dock normally carries the logo, but frappe hides the whole rail
+ * below `sm` (workspace_dock.scss), so on a phone the only brand mark left is
+ * `#brand-logo` in the desktop navbar - pinned hard left, next to the search.
+ *
+ * Centred by making the two side items share the leftover width: search and the
+ * action group both take `flex: 1 1 0`, so they resolve to equal widths and the
+ * logo between them lands on the midpoint. No absolute positioning, and the bar
+ * keeps its 52px height -- other elements are pinned to --desktop-navbar-height
+ * and would misalign if it grew.
+ *
+ * 570px matches frappe's own breakpoint for this page, so the two agree. */
+@media (max-width: 570px) {
+	body.apps-page .desktop-navbar .desktop-search-wrapper,
+	body.desktop-icons-page .desktop-navbar .desktop-search-wrapper {
+		order: 1;
+		flex: 1 1 0;
+		min-width: 0;
+		max-width: none;
+	}
+
+	body.apps-page .desktop-navbar .navbar-home,
+	body.desktop-icons-page .desktop-navbar .navbar-home {
+		order: 2;
+		flex: 0 0 auto;
+	}
+
+	body.apps-page .desktop-navbar > .flex,
+	body.desktop-icons-page .desktop-navbar > .flex {
+		order: 3;
+		flex: 1 1 0;
+		justify-content: flex-end;
+	}
+
+	/* "Ctrl+K" cannot be typed on a phone and only steals width from the row. */
+	body.apps-page .desktop-navbar .desktop-keyboard-shortcut,
+	body.desktop-icons-page .desktop-navbar .desktop-keyboard-shortcut {
+		display: none;
+	}
+}
+
 @media (max-width: 480px) {
 	.sci-hero { padding: 24px 16px 20px; }
 	.sci-hero-title { font-size: 24px; line-height: 30px; }
