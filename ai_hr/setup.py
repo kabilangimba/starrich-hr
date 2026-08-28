@@ -388,74 +388,84 @@ def _drop_empty_groups(sidebar) -> None:
 
 #: The top-level desk tile that holds every HR module.
 #:
-#: hrms ships this as `desktop_icon/frappe_hr.json`, labelled "Frappe HR", and
-#: re-creates it from that file on every migrate. Desktop Icon is
-#: `autoname: field:label`, so the label *is* the docname and `parent_icon`
-#: links to it by name -- meaning a rebrand has to rename the document, not just
-#: edit a caption, or every child tile is left pointing at a name that no longer
-#: resolves and silently disappears from the apps popup.
+#: hrms ships this as `desktop_icon/frappe_hr.json`, labelled "Frappe HR".
+#: Desktop Icon is `autoname: field:label`, so the label *is* the docname and
+#: `parent_icon` links to it by name.
 HR_FOLDER_LABEL = "Starrich HR"
 
-#: Labels this folder may currently carry: the stock one, and ours.
+#: hrms's own tile, folded into ours whenever migrate re-creates it.
 HR_FOLDER_ALIASES = ("Frappe HR",)
 
 
 def _sync_hr_folder_icon() -> str | None:
-	"""Converge on a single HR folder tile named `HR_FOLDER_LABEL`.
+	"""Converge on a single HR folder tile labelled `HR_FOLDER_LABEL`.
 
-	Returns its docname, or None when the doctype is absent.
+	Returns its docname, or None if it could not be established.
 
-	Runs from `after_migrate`, i.e. straight after hrms has re-created its own
-	"Frappe HR" tile, so it has to cope with the alias reappearing every time.
+	Renaming hrms's own tile does not work, and the failure is silent: migrate
+	sweeps "orphan" Desktop Icons, and `entity_filter_map` in
+	`frappe/model/sync.py` selects them with `{"standard": True}` -- a *standard*
+	row whose backing JSON is missing. Renaming the stock row leaves exactly
+	that, so the next migrate deletes it and every child tile is orphaned into
+	invisibility.
+
+	So we own a separate tile with `standard = 0`, which the sweeper never
+	considers, and fold hrms's row into it on each `after_migrate`.
 	"""
 	if not frappe.db.exists("DocType", "Desktop Icon"):
 		return None
 
-	canonical = frappe.db.exists("Desktop Icon", HR_FOLDER_LABEL)
+	if frappe.db.exists("Desktop Icon", HR_FOLDER_LABEL):
+		frappe.db.set_value(
+			"Desktop Icon",
+			HR_FOLDER_LABEL,
+			{"standard": 0, "hidden": 0, "app": HR_APP, "icon_type": "App"},
+			update_modified=False,
+		)
+	else:
+		try:
+			frappe.get_doc(
+				{
+					"doctype": "Desktop Icon",
+					"label": HR_FOLDER_LABEL,
+					"icon_type": "App",
+					"link_type": "External",
+					"app": HR_APP,
+					"standard": 0,
+					"hidden": 0,
+				}
+			).insert(ignore_permissions=True)
+		except Exception:
+			frappe.log_error(
+				title="AI HR: could not create HR folder icon", message=frappe.get_traceback()
+			)
+			return None
 
+	canonical = HR_FOLDER_LABEL
+
+	# hrms re-creates its own tile on every migrate. Adopt its children and hide
+	# it, rather than deleting a standard row that migrate would only restore.
 	for alias in HR_FOLDER_ALIASES:
 		if not frappe.db.exists("Desktop Icon", alias):
 			continue
-
-		if not canonical:
-			# rename_doc rewrites every Link field pointing at this row, so the
-			# child tiles follow the rename instead of being orphaned by it.
-			frappe.rename_doc(
-				"Desktop Icon", alias, HR_FOLDER_LABEL, force=True, show_alert=False
-			)
+		for child in frappe.get_all("Desktop Icon", filters={"parent_icon": alias}, pluck="name"):
 			frappe.db.set_value(
-				"Desktop Icon", HR_FOLDER_LABEL, "label", HR_FOLDER_LABEL, update_modified=False
+				"Desktop Icon", child, "parent_icon", canonical, update_modified=False
 			)
-			canonical = HR_FOLDER_LABEL
-		else:
-			# Both exist: hrms re-created its tile on migrate next to ours. Move
-			# any children across and hide the duplicate rather than deleting a
-			# standard record, which migrate would only put back.
-			for child in frappe.get_all(
-				"Desktop Icon", filters={"parent_icon": alias}, pluck="name"
-			):
-				frappe.db.set_value(
-					"Desktop Icon", child, "parent_icon", canonical, update_modified=False
-				)
-			frappe.db.set_value("Desktop Icon", alias, "hidden", 1, update_modified=False)
+		frappe.db.set_value("Desktop Icon", alias, "hidden", 1, update_modified=False)
 
-	if not canonical:
-		return None
-
-	# Re-home tiles whose parent no longer resolves. This is the state a restored
-	# database lands in: the dump's rows point at our folder name, but the tile
-	# itself came from the server's own hrms copy under the stock name.
+	# Adopt tiles whose parent no longer resolves -- the state a restored
+	# database lands in, and what the sweeper leaves behind.
 	for icon in frappe.get_all(
-		"Desktop Icon",
-		filters={"app": HR_APP, "parent_icon": ("is", "set")},
-		fields=["name", "parent_icon"],
+		"Desktop Icon", filters={"app": HR_APP}, fields=["name", "parent_icon"]
 	):
-		if icon.parent_icon != canonical and not frappe.db.exists("Desktop Icon", icon.parent_icon):
+		if icon.name == canonical or not icon.parent_icon or icon.parent_icon == canonical:
+			continue
+		if not frappe.db.exists("Desktop Icon", icon.parent_icon):
 			frappe.db.set_value(
 				"Desktop Icon", icon.name, "parent_icon", canonical, update_modified=False
 			)
 
-	frappe.db.set_value("Desktop Icon", canonical, "hidden", 0, update_modified=False)
 	return canonical
 
 
