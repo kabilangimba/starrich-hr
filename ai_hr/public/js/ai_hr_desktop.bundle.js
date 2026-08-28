@@ -313,24 +313,20 @@ ai_hr.portal.open_support = function () {
 		const active = strip && strip.querySelector(".workspace-dock-item.active");
 		if (!strip || !active) return;
 
-		// Deliberately not scrollIntoView(): that scrolls the *page* vertically as
-		// well, yanking the user away from what they were reading. Only the strip
-		// should move.
-		const centred = active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
-		const max = strip.scrollWidth - strip.clientWidth;
-		// Clamped, so an item near either end settles flush instead of being left
-		// half-clipped against the edge.
-		const target = Math.max(0, Math.min(centred, max));
-
-		// Instant, not smooth: on first paint the animation had not finished before
-		// the page was usable, which left the active workspace clipped at the edge
-		// -- exactly the confusion this is meant to remove.
-		strip.scrollLeft = target;
+		// `block: "nearest"` is what makes this safe: plain scrollIntoView() also
+		// scrolls the page vertically, yanking the reader away from the content.
+		// Measuring offsets by hand was tried first and mis-centred -- the labels
+		// had not finished laying out when the numbers were taken, so the active
+		// item ended up clipped against the edge.
+		active.scrollIntoView({ inline: "center", block: "nearest" });
 	}
 
-	// The dock repaints its active item slightly after the route settles.
+	// The dock repaints its active item slightly after the route settles, and the
+	// labels change item widths once webfonts land -- so run twice rather than
+	// betting on a single moment being the right one.
 	function schedule() {
 		window.setTimeout(reveal, 150);
+		window.setTimeout(reveal, 800);
 	}
 
 	if (document.readyState === "loading") {
