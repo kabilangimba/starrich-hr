@@ -360,6 +360,50 @@ body.desktop-icons-page .desktop-container.sci-stacked .icon-title.sci-launch-ca
 		width: 34px;
 		height: 34px;
 	}
+
+	/* Label every workspace. Ten near-identical glyphs in a row is not something
+	 * you can navigate by; the name is already on the button as `aria-label`, so
+	 * it can be printed without touching the markup. Only items in
+	 * `.workspace-dock-items` get this -- search, notifications and the avatar
+	 * are universally understood icons and stay bare. */
+	body .workspace-dock .workspace-dock-items .workspace-dock-item {
+		flex-direction: column;
+		justify-content: center;
+		gap: 3px;
+		width: auto;
+		min-width: 58px;
+		max-width: 74px;
+		height: auto;
+		padding: 5px 6px 4px;
+		background: transparent;
+		border-radius: 9px;
+	}
+
+	body .workspace-dock .workspace-dock-items .workspace-dock-item::after {
+		content: attr(aria-label);
+		display: block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 9px;
+		line-height: 1.15;
+		color: var(--ink-gray-6);
+	}
+
+	body .workspace-dock .workspace-dock-items .workspace-dock-item.active {
+		background: var(--surface-gray-3);
+	}
+	body .workspace-dock .workspace-dock-items .workspace-dock-item.active::after {
+		color: var(--ink-gray-8);
+		font-weight: 600;
+	}
+
+	/* With the label carrying the active state, the indicator bar would only
+	 * crowd the strip. */
+	body .workspace-dock .workspace-dock-items .workspace-dock-item.active::before {
+		display: none;
+	}
 	body .workspace-dock .workspace-dock-item svg,
 	body .workspace-dock .workspace-dock-item img {
 		width: 18px;

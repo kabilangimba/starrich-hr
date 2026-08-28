@@ -296,3 +296,50 @@ ai_hr.portal.open_support = function () {
 		if (prune() || ++tries > 40) clearInterval(timer);
 	}, 250);
 })();
+
+// Keep the current workspace visible in the mobile bottom bar.
+//
+// The bar scrolls sideways and holds every workspace, so the active one is
+// frequently past the right edge -- on Payroll it sat off-screen entirely, which
+// left the bar giving no indication of where you actually were. Nudge it into
+// view on load and on every route change.
+(function keep_active_workspace_visible() {
+	const MOBILE = "(max-width: 767.98px)";
+
+	function reveal() {
+		if (!window.matchMedia || !window.matchMedia(MOBILE).matches) return;
+
+		const strip = document.querySelector(".workspace-dock .workspace-dock-items");
+		const active = strip && strip.querySelector(".workspace-dock-item.active");
+		if (!strip || !active) return;
+
+		// Deliberately not scrollIntoView(): that scrolls the *page* vertically as
+		// well, yanking the user away from what they were reading. Only the strip
+		// should move.
+		const target = active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
+		strip.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+	}
+
+	// The dock repaints its active item slightly after the route settles.
+	function schedule() {
+		window.setTimeout(reveal, 150);
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", schedule);
+	} else {
+		schedule();
+	}
+
+	// frappe.router may not exist yet when app_include_js runs; retry briefly
+	// rather than assume, matching the other patches in this file.
+	let tries = 0;
+	const timer = setInterval(() => {
+		if (window.frappe && frappe.router && frappe.router.on) {
+			frappe.router.on("change", schedule);
+			clearInterval(timer);
+		} else if (++tries > 40) {
+			clearInterval(timer);
+		}
+	}, 250);
+})();
