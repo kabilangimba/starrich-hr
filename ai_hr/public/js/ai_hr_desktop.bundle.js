@@ -316,8 +316,16 @@ ai_hr.portal.open_support = function () {
 		// Deliberately not scrollIntoView(): that scrolls the *page* vertically as
 		// well, yanking the user away from what they were reading. Only the strip
 		// should move.
-		const target = active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
-		strip.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+		const centred = active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
+		const max = strip.scrollWidth - strip.clientWidth;
+		// Clamped, so an item near either end settles flush instead of being left
+		// half-clipped against the edge.
+		const target = Math.max(0, Math.min(centred, max));
+
+		// Instant, not smooth: on first paint the animation had not finished before
+		// the page was usable, which left the active workspace clipped at the edge
+		// -- exactly the confusion this is meant to remove.
+		strip.scrollLeft = target;
 	}
 
 	// The dock repaints its active item slightly after the route settles.
