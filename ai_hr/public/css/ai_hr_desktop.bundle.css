@@ -289,6 +289,101 @@ body.desktop-icons-page .desktop-container.sci-stacked .icon-title.sci-launch-ca
 	.sci-tile-go { display: none; }
 }
 
+/* -- mobile: workspace switcher as a bottom bar -----------------------------
+ *
+ * Frappe renders the whole workspace rail on a phone -- every workspace, each
+ * button already wired to route -- and then hides it:
+ * `.workspace-dock { display: none }` under 767.98px (workspace_dock.scss). The
+ * body sidebar is collapsed at that width too, so a phone is left with no way to
+ * move sideways between workspaces at all: getting from Payroll to Expenses
+ * means backing out to the apps screen and drilling in again.
+ *
+ * The markup is fine; only its orientation suits a phone badly. Re-lay it as a
+ * fixed bottom bar, the usual mobile pattern, so every workspace stays one tap
+ * away. Nothing is re-implemented -- the existing buttons keep their handlers,
+ * their active state and their tooltips.
+ *
+ * `:not(.hidden)` is load-bearing: frappe sets `.hidden` on pages that genuinely
+ * have no dock, and that must keep winning over this rule.
+ *
+ * 767.98px matches frappe's own value exactly, so the two never disagree about
+ * where "mobile" begins.
+ */
+@media (max-width: 767.98px) {
+	body .workspace-dock:not(.hidden) {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 6px;
+
+		position: fixed;
+		top: auto;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		width: auto;
+		height: auto;
+		flex: 0 0 auto;
+
+		padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px));
+		border-right: 0;
+		border-top: 1px solid var(--border-color);
+		z-index: 1035;
+	}
+
+	/* Rail furniture with no meaning once the bar runs horizontally. */
+	body .workspace-dock .workspace-dock-logo,
+	body .workspace-dock .workspace-dock-divider,
+	body .workspace-dock .workspace-dock-resize-handle,
+	body .workspace-dock .workspace-dock-toggle-btn {
+		display: none;
+	}
+
+	body .workspace-dock .workspace-dock-shortcuts {
+		flex-direction: row;
+		width: auto;
+		gap: 8px;
+	}
+
+	/* More workspaces than fit across a phone, so the strip scrolls sideways. */
+	body .workspace-dock .workspace-dock-items {
+		flex-direction: row;
+		width: auto;
+		gap: 10px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		padding: 2px 0;
+	}
+
+	/* 34px rather than the rail's 28px: a touch target, not a pointer one. */
+	body .workspace-dock .workspace-dock-item {
+		width: 34px;
+		height: 34px;
+	}
+	body .workspace-dock .workspace-dock-item svg,
+	body .workspace-dock .workspace-dock-item img {
+		width: 18px;
+		height: 18px;
+	}
+
+	/* The active marker is a bar down the rail's left edge; on a bottom bar it
+	 * belongs underneath the tile instead. */
+	body .workspace-dock .workspace-dock-item.active::before {
+		top: auto;
+		bottom: -6px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 28px;
+		height: 3px;
+		border-radius: 3px 3px 0 0;
+	}
+
+	/* Reserve the bar's height so it never sits on top of the page's last rows. */
+	body.workspace-dock-active .main-section {
+		padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+	}
+}
+
 /* -- mobile: centre the brand mark ------------------------------------------
  *
  * The workspace dock normally carries the logo, but frappe hides the whole rail
