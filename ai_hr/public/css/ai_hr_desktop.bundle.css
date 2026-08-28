@@ -269,13 +269,50 @@ body.desktop-icons-page .desktop-container.sci-stacked .icon-title.sci-launch-ca
 		background-attachment: scroll;
 	}
 
-	.sci-hero { padding: 36px 20px 40px; }
+	/* The hero is the whole first screen on a phone. Trimming its padding is
+	 * what brings the tiles above the fold. */
+	.sci-hero { padding: 32px 20px 24px; }
 	.sci-hero-title { font-size: 28px; line-height: 36px; }
-	.sci-hero-sub { font-size: 15px; }
-	.sci-tiles { padding: 8px 20px 32px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+	.sci-hero-sub { font-size: 15px; line-height: 22px; }
+
+	/* Two fixed columns, not `auto-fit`: there are four tiles, and auto-fit fits
+	 * three across a tablet, leaving the fourth stranded alone on a second row.
+	 * A 2x2 block reads as one group. */
+	.sci-tiles {
+		gap: 12px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		padding: 8px 20px calc(32px + env(safe-area-inset-bottom, 0px));
+	}
 	.sci-tile { padding: 14px; gap: 12px; }
 	.sci-tile-value { font-size: 22px; line-height: 28px; }
+	/* Hover-only affordance; there is no hover on touch. */
 	.sci-tile-go { display: none; }
+}
+
+@media (max-width: 480px) {
+	.sci-hero { padding: 24px 16px 20px; }
+	.sci-hero-title { font-size: 24px; line-height: 30px; }
+	.sci-hero-sub { font-size: 14px; line-height: 20px; }
+
+	/* Below this width two columns leave ~78px for the text once the icon, gap
+	 * and padding are taken out - not enough for "RECRUITMENT" to fit. */
+	.sci-tiles {
+		grid-template-columns: 1fr;
+		padding: 8px 16px calc(28px + env(safe-area-inset-bottom, 0px));
+	}
+
+	/* 60px keeps each tile a comfortable touch target (48px is the floor, plus
+	 * padding). */
+	.sci-tile { min-height: 60px; }
+
+	/* One tile per row at this width, so the full sentence fits -- the desktop
+	 * ellipsis ("2 joined in the las...") only exists to protect a narrow
+	 * column, and there is no column to protect here. */
+	.sci-tile-hint {
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+	}
 }
 
 

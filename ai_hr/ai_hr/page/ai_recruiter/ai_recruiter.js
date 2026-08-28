@@ -270,6 +270,10 @@ function inject_styles() {
 .airc-page .airc {
 	display: flex; flex-direction: column;
 	height: calc(100vh - var(--navbar-height, 60px) - 110px);
+	/* dvh tracks the viewport as a mobile browser's URL bar collapses; vh does
+	 * not, and the difference is the composer sitting below the fold until you
+	 * scroll. Declared second so browsers without dvh keep the vh line. */
+	height: calc(100dvh - var(--navbar-height, 60px) - 110px);
 	max-width: 820px; margin: 0 auto;
 }
 
@@ -423,7 +427,47 @@ function inject_styles() {
 
 @media (max-width: 640px) {
 	.airc-page .airc-turn.is-user .airc-bubble { max-width: 88%; }
-	.airc-page .airc { height: calc(100vh - 200px); }
+	.airc-page .airc { height: calc(100vh - 168px); }
+	.airc-page .airc { height: calc(100dvh - 168px); }
+
+	.airc-page .airc-scroll { padding: .75rem .25rem 1rem; }
+	.airc-page .airc-thread { gap: 1.25rem; }
+
+	/* The empty state was ~3.5rem of padding on a screen that has none to give. */
+	.airc-page .airc-empty { padding: 2rem .5rem; }
+	.airc-page .airc-empty-badge { width: 46px; height: 46px; margin-bottom: .75rem; }
+
+	/* Four chips wrapped to three rows and pushed the composer off-screen. One
+	 * row that scrolls sideways instead; the negative margin lets it bleed to
+	 * the screen edge so it reads as scrollable. */
+	.airc-page .airc-suggestions {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		margin: 0 -.25rem .55rem;
+		padding: 0 .25rem .15rem;
+	}
+	.airc-page .airc-suggestions::-webkit-scrollbar { display: none; }
+	/* Capped so the next chip always peeks in at the edge - otherwise the first
+	 * suggestion fills the row and the strip looks like a single button rather
+	 * than something you can swipe. Tapping still sends the full text. */
+	.airc-page .airc-chip {
+		flex: 0 0 auto;
+		max-width: 85%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* 16px exactly: iOS Safari zooms the whole page when a focused field is
+	 * under 16px, and the user is then left panned sideways mid-conversation. */
+	.airc-page .airc-input { font-size: 16px; }
+	.airc-page .airc-inputrow { padding: .4rem .4rem .4rem .85rem; }
+	/* 40px clears the 44px-ish touch-target floor once padding is counted. */
+	.airc-page .airc-send { width: 40px; height: 40px; }
+
+	.airc-page .airc-disclaimer { font-size: .68rem; margin-top: .45rem; }
 }
 `;
 	$("<style>").attr("id", "airc-styles").text(css).appendTo(document.head);
