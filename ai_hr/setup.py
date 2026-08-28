@@ -396,6 +396,20 @@ HR_FOLDER_LABEL = "Starrich HR"
 #: hrms's own tile, folded into ours whenever migrate re-creates it.
 HR_FOLDER_ALIASES = ("Frappe HR",)
 
+#: Artwork and target for the folder tile.
+#:
+#: `logo_url` is what stops the grid falling back to the grey alphabet tile (a
+#: circled "S"). We reuse hrms's own green HR mark rather than shipping a copy:
+#: it is already served at this path on every install that has hrms.
+HR_FOLDER_PROPERTIES = {
+	"logo_url": "/assets/hrms/images/frappe-hr-logo.svg",
+	"link": "/desk/people",
+	"link_type": "External",
+	# bg_color only tints the alphabet fallback; with a logo it must be cleared
+	# or the tile keeps the grey plate behind the mark.
+	"bg_color": None,
+}
+
 
 def _sync_hr_folder_icon() -> str | None:
 	"""Converge on a single HR folder tile labelled `HR_FOLDER_LABEL`.
@@ -419,7 +433,13 @@ def _sync_hr_folder_icon() -> str | None:
 		frappe.db.set_value(
 			"Desktop Icon",
 			HR_FOLDER_LABEL,
-			{"standard": 0, "hidden": 0, "app": HR_APP, "icon_type": "App"},
+			{
+				"standard": 0,
+				"hidden": 0,
+				"app": HR_APP,
+				"icon_type": "App",
+				**HR_FOLDER_PROPERTIES,
+			},
 			update_modified=False,
 		)
 	else:
@@ -429,10 +449,10 @@ def _sync_hr_folder_icon() -> str | None:
 					"doctype": "Desktop Icon",
 					"label": HR_FOLDER_LABEL,
 					"icon_type": "App",
-					"link_type": "External",
 					"app": HR_APP,
 					"standard": 0,
 					"hidden": 0,
+					**HR_FOLDER_PROPERTIES,
 				}
 			).insert(ignore_permissions=True)
 		except Exception:
